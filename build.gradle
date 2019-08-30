@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group 'HrIdeaBot'
+version '1.0'
+sourceCompatibility = 1.8
+
+task complileJar(type: Jar) {
+    manifest {
+        attributes  'Implementation-Title': 'HR IDEA bot',
+                    'Main-Class': 'ru.ivan.telegram.Runner'
+    }
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile 'org.telegram:telegrambots:4.3.1'
+    compile 'org.yaml:snakeyaml:1.21'
+}
