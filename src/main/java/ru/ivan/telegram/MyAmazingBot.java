@@ -10,6 +10,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
     private final YamlVariables yaml = new YamlVariables("variables.yaml");
     private final YamlVariables credentials = new YamlVariables("credentials.yaml");
 
+    @Override
     public void onUpdateReceived(Update update) {
         // We check if the update has a message and the message has text
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -71,10 +72,11 @@ class MyAmazingBot extends TelegramLongPollingBot {
         return text.toString();
     }
 
+    @Override
     public String getBotUsername() {
         return credentials.getVariable("BotUsername");
     }
-
+    @Override
     public String getBotToken() {
         return credentials.getVariable("BotToken");
     }
