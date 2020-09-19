@@ -1,5 +1,6 @@
 package ru.ivan.telegram;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -48,12 +49,19 @@ class MyAmazingBot extends TelegramLongPollingBot {
             SendMessage message = new SendMessage()
                     .setChatId(chat_id)
                     .setText(responseMessage); // Create a message object object
-            saveFileFromMessage(update);
             try {
+                saveFileFromMessage(update); //saving file
                 execute(message); // Sending our message object to user
             } catch (TelegramApiException e) {
                 e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            } catch (NullPointerException e) {
+                e.printStackTrace();
+            }catch (JSONException e) {
+                e.printStackTrace();
             }
+
         }
     }
 
@@ -99,9 +107,15 @@ class MyAmazingBot extends TelegramLongPollingBot {
         return text.toString();
     }
 
-    private void saveFileFromMessage(Update update) {
-        try
-        {
+    /**
+     *
+     * @param update users message
+     * @throws IOException from String, FileOutputStream
+     * @throws NullPointerException
+     * @throws JSONException from JSONObject
+     */
+
+    private void saveFileFromMessage(Update update) throws IOException, NullPointerException, JSONException {
             URL url = new URL("https://api.telegram.org/bot"+
                     credentials.getVariable("BotToken")+
                     "/getFile?file_id="+update.getMessage().getDocument().getFileId());
@@ -114,18 +128,12 @@ class MyAmazingBot extends TelegramLongPollingBot {
             URL download = new URL("https://api.telegram.org/file/bot"+
                     credentials.getVariable("BotToken")+"/" + file_path);
             FileOutputStream fos = new FileOutputStream(file_name);
-            System.out.println("Start upload");
+            //System.out.println("Start upload");
             ReadableByteChannel rbc = Channels.newChannel(download.openStream());
             fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
             fos.close();
             rbc.close();
-            System.out.println("Uploaded!");
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        } catch (NullPointerException e) {
-            e.printStackTrace();
-        }
+            //System.out.println("Uploaded!");
     }
 
     @Override
