@@ -41,7 +41,6 @@ class MyAmazingBot extends TelegramLongPollingBot {
         if(update.hasMessage() && update.getMessage().hasDocument()) {
             //Set variables
 
-            String file_name = update.getMessage().getDocument().getFileName();
             long chat_id = update.getMessage().getChatId();
 
             String responseMessage = getResponseMessage("document");
@@ -49,31 +48,10 @@ class MyAmazingBot extends TelegramLongPollingBot {
             SendMessage message = new SendMessage()
                     .setChatId(chat_id)
                     .setText(responseMessage); // Create a message object object
+            saveFileFromMessage(update);
             try {
-                URL url = new URL("https://api.telegram.org/bot"+
-                        credentials.getVariable("BotToken")+
-                        "/getFile?file_id="+update.getMessage().getDocument().getFileId());
-                BufferedReader in = new BufferedReader(new InputStreamReader( url.openStream()));
-                String res = in.readLine();
-                JSONObject jresult = new JSONObject(res);
-                JSONObject path = jresult.getJSONObject("result");
-                String file_path = path.getString("file_path");
-                URL download = new URL("https://api.telegram.org/file/bot"+
-                        credentials.getVariable("BotToken")+"/" + file_path);
-                FileOutputStream fos = new FileOutputStream(file_name);
-                System.out.println("Start upload");
-                ReadableByteChannel rbc = Channels.newChannel(download.openStream());
-                fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-                fos.close();
-                rbc.close();
-                System.out.println("Uploaded!");
-
-                execute(message); // Sending our message to user
-            } catch (IOException e) {
-                e.printStackTrace();
+                execute(message); // Sending our message object to user
             } catch (TelegramApiException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
         }
@@ -119,6 +97,35 @@ class MyAmazingBot extends TelegramLongPollingBot {
             text.append(System.lineSeparator());
         }
         return text.toString();
+    }
+
+    private void saveFileFromMessage(Update update) {
+        try
+        {
+            URL url = new URL("https://api.telegram.org/bot"+
+                    credentials.getVariable("BotToken")+
+                    "/getFile?file_id="+update.getMessage().getDocument().getFileId());
+            BufferedReader in = new BufferedReader(new InputStreamReader( url.openStream()));
+            String res = in.readLine();
+            JSONObject jresult = new JSONObject(res);
+            JSONObject path = jresult.getJSONObject("result");
+            String file_name = update.getMessage().getDocument().getFileName();
+            String file_path = path.getString("file_path");
+            URL download = new URL("https://api.telegram.org/file/bot"+
+                    credentials.getVariable("BotToken")+"/" + file_path);
+            FileOutputStream fos = new FileOutputStream(file_name);
+            System.out.println("Start upload");
+            ReadableByteChannel rbc = Channels.newChannel(download.openStream());
+            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+            fos.close();
+            rbc.close();
+            System.out.println("Uploaded!");
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (NullPointerException e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
