@@ -112,7 +112,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
                 YAML_CREDENTIALS.getVariable("BotToken") +
                 "/getFile?file_id=" + telegramMsg.getDocument().getFileId());
 
-        String file_path = new JSONObject(new BufferedReader(new InputStreamReader(url.openStream())).readLine()).getJSONObject("result").getString("file_path");
+        String file_path = getPathToTelegramFile(url);
         URL download = new URL("https://api.telegram.org/file/bot" +
                 YAML_CREDENTIALS.getVariable("BotToken") + "/" + file_path);
 
@@ -131,6 +131,16 @@ class MyAmazingBot extends TelegramLongPollingBot {
         if (IS_LOGGING) {
             System.out.println("Uploaded!");
         }
+    }
+
+    private String getPathToTelegramFile(URL url) throws IOException {
+
+        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+        String res = in.readLine();
+        JSONObject jresult = new JSONObject(res);
+        JSONObject path = jresult.getJSONObject("result");
+
+        return path.getString("file_path");
     }
 
     @Override
