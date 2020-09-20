@@ -18,6 +18,8 @@ class MyAmazingBot extends TelegramLongPollingBot {
     private final YamlVariables yaml = new YamlVariables("variables.yaml");
     private final YamlVariables credentials = new YamlVariables("credentials.yaml");
 
+    private final static boolean IS_LOGGING = false;
+
     @Override
     public void onUpdateReceived(Update update) {
         if (update != null && update.hasMessage()) {
@@ -118,12 +120,19 @@ class MyAmazingBot extends TelegramLongPollingBot {
         URL download = new URL("https://api.telegram.org/file/bot" +
                 credentials.getVariable("BotToken") + "/" + file_path);
         FileOutputStream fos = new FileOutputStream(file_name);
-        //System.out.println("Start upload");
+
+        if (IS_LOGGING) {
+            System.out.println("Start upload");
+        }
+
         ReadableByteChannel rbc = Channels.newChannel(download.openStream());
         fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
         fos.close();
         rbc.close();
-        //System.out.println("Uploaded!");
+
+        if (IS_LOGGING) {
+            System.out.println("Uploaded!");
+        }
     }
 
     @Override
