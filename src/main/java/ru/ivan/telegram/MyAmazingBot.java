@@ -108,13 +108,12 @@ class MyAmazingBot extends TelegramLongPollingBot {
      */
 
     private void saveFileFromMessage(Message telegramMsg) throws IOException, NullPointerException, JSONException {
-        URL url = new URL("https://api.telegram.org/bot" +
-                YAML_CREDENTIALS.getVariable("BotToken") +
-                "/getFile?file_id=" + telegramMsg.getDocument().getFileId());
 
-        String file_path = getPathToTelegramFile(url);
-        URL download = new URL("https://api.telegram.org/file/bot" +
-                YAML_CREDENTIALS.getVariable("BotToken") + "/" + file_path);
+        URL url = new URL(String.format("https://api.telegram.org/bot%s/getFile?file_id=%s",
+                YAML_CREDENTIALS.getVariable("BotToken"), telegramMsg.getDocument().getFileId()));
+
+        URL download = new URL(String.format("https://api.telegram.org/file/bot%s/%s",
+                YAML_CREDENTIALS.getVariable("BotToken"), getPathToTelegramFile(url)));
 
         String file_name = telegramMsg.getDocument().getFileName();
         FileOutputStream fos = new FileOutputStream(file_name);
