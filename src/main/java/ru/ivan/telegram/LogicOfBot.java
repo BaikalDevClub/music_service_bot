@@ -115,8 +115,8 @@ class LogicOfBot extends TelegramLongPollingBot {
         URL download = new URL(String.format("https://api.telegram.org/file/bot%s/%s",
                 YAML_CREDENTIALS.getVariable("BotToken"), getPathToTelegramFile(url)));
 
-        String file_name = telegramMsg.getDocument().getFileName();
-        FileOutputStream fos = new FileOutputStream(file_name);
+        String fileName = telegramMsg.getDocument().getFileName();
+        FileOutputStream fos = new FileOutputStream(fileName);
 
         if (IS_LOGGING) {
             System.out.println("Start upload");
