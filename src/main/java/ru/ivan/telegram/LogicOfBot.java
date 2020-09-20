@@ -26,30 +26,32 @@ class LogicOfBot extends TelegramLongPollingBot {
 
             try {
                 Message telegramMsg = update.getMessage();
+                long chatId = telegramMsg.getChatId();
 
                 // If message has text - print response
                 if (telegramMsg.hasText()) {
                     String message_text = telegramMsg.getText();
-                    long chat_id = telegramMsg.getChatId();
 
                     String responseMessage = getResponseMessage(message_text);
-                    SendMessage message = new SendMessage()
-                            .setChatId(chat_id)
-                            .setText(responseMessage);
-                    execute(message); // Sending our message object to user
+                    if (responseMessage != null) {
+                        SendMessage message = new SendMessage()
+                                .setChatId(chatId)
+                                .setText(responseMessage);
+                        execute(message); // Sending our message object to user
+                    }
                 }
 
                 // if the message has document - save file
                 if (telegramMsg.hasDocument()) {
-                    //Set variables
 
-                    long chat_id = telegramMsg.getChatId();
                     String responseMessage = getResponseMessage("document");
-                    SendMessage message = new SendMessage()
-                            .setChatId(chat_id)
-                            .setText(responseMessage);
-                    saveFileFromMessage(telegramMsg);
-                    execute(message); // Sending our message object to user
+                    if (responseMessage != null) {
+                        SendMessage message = new SendMessage()
+                                .setChatId(chatId)
+                                .setText(responseMessage);
+                        saveFileFromMessage(telegramMsg);
+                        execute(message); // Sending our message object to user
+                    }
                 }
 
             } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
@@ -61,34 +63,16 @@ class LogicOfBot extends TelegramLongPollingBot {
     private String getResponseMessage(String message_text) {
         switch (message_text) {
             case "/start":
-                return getAnswer("start", "line", "write", "line", "questions");
-            case "1":
-                return getAnswerForQuestion("q1");
-            case "2":
-                return getAnswerForQuestion("q2");
-            case "3":
-                return getAnswerForQuestion("q3");
-            case "4":
-                return getAnswerForQuestion("q4");
-            case "5":
-                return getAnswerForQuestion("q5");
-            case "6":
-                return getAnswerForQuestion("q6");
-            case "7":
-                return getAnswerForQuestion("q7");
-            case "8":
-                return getAnswerForQuestion("q8");
-            case "0":
-                return getAnswerForQuestion("q0");
+                return getAnswer("start");
             case "document":
-                return getAnswerForQuestion(("document"));
+                return getAnswerForCommand("document");
             default:
-                return getAnswer("error", "splitter", "questions");
+                return null;
         }
     }
 
-    private String getAnswerForQuestion(String question) {
-        return getAnswer(question, "splitter", "after", "write", "line", "questions");
+    private String getAnswerForCommand(String command) {
+        return getAnswer(command, "splitter", "after", "write", "line", "commands");
     }
 
     private String getAnswer(String... strings) {
