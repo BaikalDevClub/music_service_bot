@@ -27,19 +27,19 @@ class MyAmazingBot extends TelegramLongPollingBot {
             try {
                 Message telegramMsg = update.getMessage();
 
-                // We check if the update has a message and the message has text
+                // If message has text - print response
                 if (telegramMsg.hasText()) {
                     String message_text = telegramMsg.getText();
                     long chat_id = telegramMsg.getChatId();
 
                     String responseMessage = getResponseMessage(message_text);
-                    SendMessage message = new SendMessage() // Create a message object object
+                    SendMessage message = new SendMessage()
                             .setChatId(chat_id)
                             .setText(responseMessage);
                     execute(message); // Sending our message object to user
                 }
 
-                // We check if the update has a message and the message has document
+                // if the message has document - save file
                 if (telegramMsg.hasDocument()) {
                     //Set variables
 
@@ -47,8 +47,8 @@ class MyAmazingBot extends TelegramLongPollingBot {
                     String responseMessage = getResponseMessage("document");
                     SendMessage message = new SendMessage()
                             .setChatId(chat_id)
-                            .setText(responseMessage); // Create a message object object
-                    saveFileFromMessage(telegramMsg); //saving file
+                            .setText(responseMessage);
+                    saveFileFromMessage(telegramMsg);
                     execute(message); // Sending our message object to user
                 }
 
