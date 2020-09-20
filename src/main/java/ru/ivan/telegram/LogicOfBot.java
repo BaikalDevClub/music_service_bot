@@ -13,7 +13,7 @@ import java.net.URL;
 import java.nio.channels.Channels;
 import java.nio.channels.ReadableByteChannel;
 
-class MyAmazingBot extends TelegramLongPollingBot {
+class LogicOfBot extends TelegramLongPollingBot {
 
     private final YamlVariables YAML_VARIABLES = new YamlVariables("variables.yaml");
     private final YamlVariables YAML_CREDENTIALS = new YamlVariables("credentials.yaml");
