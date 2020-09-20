@@ -2,13 +2,13 @@ plugins {
     id 'java'
 }
 
-group 'HrIdeaBot'
+group 'MusicServiceBot'
 version '1.0'
 sourceCompatibility = 1.8
 
 task complileJar(type: Jar) {
     manifest {
-        attributes  'Implementation-Title': 'HR IDEA bot',
+        attributes  'Implementation-Title': 'MusicServiceBot',
                     'Main-Class': 'ru.ivan.telegram.Runner'
     }
     from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
