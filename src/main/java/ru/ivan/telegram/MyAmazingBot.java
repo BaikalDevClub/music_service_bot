@@ -111,14 +111,12 @@ class MyAmazingBot extends TelegramLongPollingBot {
         URL url = new URL("https://api.telegram.org/bot" +
                 YAML_CREDENTIALS.getVariable("BotToken") +
                 "/getFile?file_id=" + telegramMsg.getDocument().getFileId());
-        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-        String res = in.readLine();
-        JSONObject jresult = new JSONObject(res);
-        JSONObject path = jresult.getJSONObject("result");
-        String file_name = telegramMsg.getDocument().getFileName();
-        String file_path = path.getString("file_path");
+
+        String file_path = new JSONObject(new BufferedReader(new InputStreamReader(url.openStream())).readLine()).getJSONObject("result").getString("file_path");
         URL download = new URL("https://api.telegram.org/file/bot" +
                 YAML_CREDENTIALS.getVariable("BotToken") + "/" + file_path);
+
+        String file_name = telegramMsg.getDocument().getFileName();
         FileOutputStream fos = new FileOutputStream(file_name);
 
         if (IS_LOGGING) {
