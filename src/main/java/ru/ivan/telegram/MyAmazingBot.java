@@ -22,39 +22,36 @@ class MyAmazingBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update != null && update.hasMessage()) {
 
-            Message telegramMsg = update.getMessage();
+            try {
+                Message telegramMsg = update.getMessage();
 
-            // We check if the update has a message and the message has text
-            if (telegramMsg.hasText()) {
-                String message_text = telegramMsg.getText();
-                long chat_id = telegramMsg.getChatId();
+                // We check if the update has a message and the message has text
+                if (telegramMsg.hasText()) {
+                    String message_text = telegramMsg.getText();
+                    long chat_id = telegramMsg.getChatId();
 
-                String responseMessage = getResponseMessage(message_text);
-                SendMessage message = new SendMessage() // Create a message object object
-                        .setChatId(chat_id)
-                        .setText(responseMessage);
-                try {
+                    String responseMessage = getResponseMessage(message_text);
+                    SendMessage message = new SendMessage() // Create a message object object
+                            .setChatId(chat_id)
+                            .setText(responseMessage);
                     execute(message); // Sending our message object to user
-                } catch (TelegramApiException e) {
-                    e.printStackTrace();
                 }
-            }
 
-            // We check if the update has a message and the message has document
-            if (telegramMsg.hasDocument()) {
-                //Set variables
+                // We check if the update has a message and the message has document
+                if (telegramMsg.hasDocument()) {
+                    //Set variables
 
-                long chat_id = telegramMsg.getChatId();
-                String responseMessage = getResponseMessage("document");
-                SendMessage message = new SendMessage()
-                        .setChatId(chat_id)
-                        .setText(responseMessage); // Create a message object object
-                try {
+                    long chat_id = telegramMsg.getChatId();
+                    String responseMessage = getResponseMessage("document");
+                    SendMessage message = new SendMessage()
+                            .setChatId(chat_id)
+                            .setText(responseMessage); // Create a message object object
                     saveFileFromMessage(telegramMsg); //saving file
                     execute(message); // Sending our message object to user
-                } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
-                    e.printStackTrace();
                 }
+
+            } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
+                e.printStackTrace();
             }
         }
     }
