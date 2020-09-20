@@ -7,7 +7,6 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
-import javax.validation.constraints.Null;
 import java.io.*;
 import java.net.URL;
 import java.nio.channels.Channels;
@@ -39,7 +38,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
             }
         }
         // We check if the update has a message and the message has document
-        if(update.hasMessage() && update.getMessage().hasDocument()) {
+        if (update.hasMessage() && update.getMessage().hasDocument()) {
             //Set variables
 
             long chat_id = update.getMessage().getChatId();
@@ -52,13 +51,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
             try {
                 saveFileFromMessage(update); //saving file
                 execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            } catch (NullPointerException e) {
-                e.printStackTrace();
-            }catch (JSONException e) {
+            } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
                 e.printStackTrace();
             }
 
@@ -66,7 +59,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
     }
 
     private String getResponseMessage(String message_text) {
-        switch (message_text){
+        switch (message_text) {
             case "/start":
                 return getAnswer("start", "line", "write", "line", "questions");
             case "1":
@@ -94,11 +87,11 @@ class MyAmazingBot extends TelegramLongPollingBot {
         }
     }
 
-    private String getAnswerForQuestion(String question){
+    private String getAnswerForQuestion(String question) {
         return getAnswer(question, "splitter", "after", "write", "line", "questions");
     }
 
-    private String getAnswer(String ... strings ){
+    private String getAnswer(String... strings) {
         StringBuilder text = new StringBuilder();
         for (String var : strings) {
             text.append(yaml.getVariable(var));
@@ -108,38 +101,38 @@ class MyAmazingBot extends TelegramLongPollingBot {
     }
 
     /**
-     *
      * @param update users message
-     * @throws IOException from String, FileOutputStream
+     * @throws IOException          from String, FileOutputStream
      * @throws NullPointerException
-     * @throws JSONException from JSONObject
+     * @throws JSONException        from JSONObject
      */
 
     private void saveFileFromMessage(Update update) throws IOException, NullPointerException, JSONException {
-            URL url = new URL("https://api.telegram.org/bot"+
-                    credentials.getVariable("BotToken")+
-                    "/getFile?file_id="+update.getMessage().getDocument().getFileId());
-            BufferedReader in = new BufferedReader(new InputStreamReader( url.openStream()));
-            String res = in.readLine();
-            JSONObject jresult = new JSONObject(res);
-            JSONObject path = jresult.getJSONObject("result");
-            String file_name = update.getMessage().getDocument().getFileName();
-            String file_path = path.getString("file_path");
-            URL download = new URL("https://api.telegram.org/file/bot"+
-                    credentials.getVariable("BotToken")+"/" + file_path);
-            FileOutputStream fos = new FileOutputStream(file_name);
-            //System.out.println("Start upload");
-            ReadableByteChannel rbc = Channels.newChannel(download.openStream());
-            fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
-            fos.close();
-            rbc.close();
-            //System.out.println("Uploaded!");
+        URL url = new URL("https://api.telegram.org/bot" +
+                credentials.getVariable("BotToken") +
+                "/getFile?file_id=" + update.getMessage().getDocument().getFileId());
+        BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+        String res = in.readLine();
+        JSONObject jresult = new JSONObject(res);
+        JSONObject path = jresult.getJSONObject("result");
+        String file_name = update.getMessage().getDocument().getFileName();
+        String file_path = path.getString("file_path");
+        URL download = new URL("https://api.telegram.org/file/bot" +
+                credentials.getVariable("BotToken") + "/" + file_path);
+        FileOutputStream fos = new FileOutputStream(file_name);
+        //System.out.println("Start upload");
+        ReadableByteChannel rbc = Channels.newChannel(download.openStream());
+        fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+        fos.close();
+        rbc.close();
+        //System.out.println("Uploaded!");
     }
 
     @Override
     public String getBotUsername() {
         return credentials.getVariable("BotUsername");
     }
+
     @Override
     public String getBotToken() {
         return credentials.getVariable("BotToken");
