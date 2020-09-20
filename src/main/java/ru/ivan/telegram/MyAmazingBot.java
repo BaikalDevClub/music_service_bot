@@ -15,8 +15,8 @@ import java.nio.channels.ReadableByteChannel;
 
 class MyAmazingBot extends TelegramLongPollingBot {
 
-    private final YamlVariables yaml = new YamlVariables("variables.yaml");
-    private final YamlVariables credentials = new YamlVariables("credentials.yaml");
+    private final YamlVariables YAML_VARIABLES = new YamlVariables("variables.yaml");
+    private final YamlVariables YAML_CREDENTIALS = new YamlVariables("credentials.yaml");
 
     private final static boolean IS_LOGGING = false;
 
@@ -94,7 +94,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
     private String getAnswer(String... strings) {
         StringBuilder text = new StringBuilder();
         for (String var : strings) {
-            text.append(yaml.getVariable(var));
+            text.append(YAML_VARIABLES.getVariable(var));
             text.append(System.lineSeparator());
         }
         return text.toString();
@@ -109,7 +109,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
 
     private void saveFileFromMessage(Message telegramMsg) throws IOException, NullPointerException, JSONException {
         URL url = new URL("https://api.telegram.org/bot" +
-                credentials.getVariable("BotToken") +
+                YAML_CREDENTIALS.getVariable("BotToken") +
                 "/getFile?file_id=" + telegramMsg.getDocument().getFileId());
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
         String res = in.readLine();
@@ -118,7 +118,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
         String file_name = telegramMsg.getDocument().getFileName();
         String file_path = path.getString("file_path");
         URL download = new URL("https://api.telegram.org/file/bot" +
-                credentials.getVariable("BotToken") + "/" + file_path);
+                YAML_CREDENTIALS.getVariable("BotToken") + "/" + file_path);
         FileOutputStream fos = new FileOutputStream(file_name);
 
         if (IS_LOGGING) {
@@ -137,11 +137,11 @@ class MyAmazingBot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return credentials.getVariable("BotUsername");
+        return YAML_CREDENTIALS.getVariable("BotUsername");
     }
 
     @Override
     public String getBotToken() {
-        return credentials.getVariable("BotToken");
+        return YAML_CREDENTIALS.getVariable("BotToken");
     }
 }
