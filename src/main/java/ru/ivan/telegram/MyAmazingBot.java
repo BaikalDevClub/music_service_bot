@@ -3,6 +3,7 @@ package ru.ivan.telegram;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -21,10 +22,12 @@ class MyAmazingBot extends TelegramLongPollingBot {
     public void onUpdateReceived(Update update) {
         if (update != null && update.hasMessage()) {
 
+            Message telegramMsg = update.getMessage();
+
             // We check if the update has a message and the message has text
-            if (update.getMessage().hasText()) {
-                String message_text = update.getMessage().getText();
-                long chat_id = update.getMessage().getChatId();
+            if (telegramMsg.hasText()) {
+                String message_text = telegramMsg.getText();
+                long chat_id = telegramMsg.getChatId();
 
                 String responseMessage = getResponseMessage(message_text);
                 SendMessage message = new SendMessage() // Create a message object object
@@ -38,16 +41,16 @@ class MyAmazingBot extends TelegramLongPollingBot {
             }
 
             // We check if the update has a message and the message has document
-            if (update.getMessage().hasDocument()) {
+            if (telegramMsg.hasDocument()) {
                 //Set variables
 
-                long chat_id = update.getMessage().getChatId();
+                long chat_id = telegramMsg.getChatId();
                 String responseMessage = getResponseMessage("document");
                 SendMessage message = new SendMessage()
                         .setChatId(chat_id)
                         .setText(responseMessage); // Create a message object object
                 try {
-                    saveFileFromMessage(update); //saving file
+                    saveFileFromMessage(telegramMsg); //saving file
                     execute(message); // Sending our message object to user
                 } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
                     e.printStackTrace();
@@ -99,21 +102,21 @@ class MyAmazingBot extends TelegramLongPollingBot {
     }
 
     /**
-     * @param update users message
+     * @param telegramMsg message from telegram
      * @throws IOException          from String, FileOutputStream
      * @throws NullPointerException from libs
      * @throws JSONException        from JSONObject
      */
 
-    private void saveFileFromMessage(Update update) throws IOException, NullPointerException, JSONException {
+    private void saveFileFromMessage(Message telegramMsg) throws IOException, NullPointerException, JSONException {
         URL url = new URL("https://api.telegram.org/bot" +
                 credentials.getVariable("BotToken") +
-                "/getFile?file_id=" + update.getMessage().getDocument().getFileId());
+                "/getFile?file_id=" + telegramMsg.getDocument().getFileId());
         BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
         String res = in.readLine();
         JSONObject jresult = new JSONObject(res);
         JSONObject path = jresult.getJSONObject("result");
-        String file_name = update.getMessage().getDocument().getFileName();
+        String file_name = telegramMsg.getDocument().getFileName();
         String file_path = path.getString("file_path");
         URL download = new URL("https://api.telegram.org/file/bot" +
                 credentials.getVariable("BotToken") + "/" + file_path);
