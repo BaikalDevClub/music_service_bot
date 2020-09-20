@@ -19,42 +19,40 @@ class MyAmazingBot extends TelegramLongPollingBot {
 
     @Override
     public void onUpdateReceived(Update update) {
-        // We check if the update has a message and the message has text
-        if (update.hasMessage() && update.getMessage().hasText()) {
-            // Set variables
+        if (update != null && update.hasMessage()) {
 
-            String message_text = update.getMessage().getText();
-            long chat_id = update.getMessage().getChatId();
+            // We check if the update has a message and the message has text
+            if (update.getMessage().hasText()) {
+                String message_text = update.getMessage().getText();
+                long chat_id = update.getMessage().getChatId();
 
-            String responseMessage = getResponseMessage(message_text);
-
-            SendMessage message = new SendMessage() // Create a message object object
-                    .setChatId(chat_id)
-                    .setText(responseMessage);
-            try {
-                execute(message); // Sending our message object to user
-            } catch (TelegramApiException e) {
-                e.printStackTrace();
-            }
-        }
-        // We check if the update has a message and the message has document
-        if (update.hasMessage() && update.getMessage().hasDocument()) {
-            //Set variables
-
-            long chat_id = update.getMessage().getChatId();
-
-            String responseMessage = getResponseMessage("document");
-
-            SendMessage message = new SendMessage()
-                    .setChatId(chat_id)
-                    .setText(responseMessage); // Create a message object object
-            try {
-                saveFileFromMessage(update); //saving file
-                execute(message); // Sending our message object to user
-            } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
-                e.printStackTrace();
+                String responseMessage = getResponseMessage(message_text);
+                SendMessage message = new SendMessage() // Create a message object object
+                        .setChatId(chat_id)
+                        .setText(responseMessage);
+                try {
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
             }
 
+            // We check if the update has a message and the message has document
+            if (update.getMessage().hasDocument()) {
+                //Set variables
+
+                long chat_id = update.getMessage().getChatId();
+                String responseMessage = getResponseMessage("document");
+                SendMessage message = new SendMessage()
+                        .setChatId(chat_id)
+                        .setText(responseMessage); // Create a message object object
+                try {
+                    saveFileFromMessage(update); //saving file
+                    execute(message); // Sending our message object to user
+                } catch (TelegramApiException | IOException | NullPointerException | JSONException e) {
+                    e.printStackTrace();
+                }
+            }
         }
     }
 
@@ -103,7 +101,7 @@ class MyAmazingBot extends TelegramLongPollingBot {
     /**
      * @param update users message
      * @throws IOException          from String, FileOutputStream
-     * @throws NullPointerException
+     * @throws NullPointerException from libs
      * @throws JSONException        from JSONObject
      */
 
